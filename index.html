@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploradores de Mapas Conceptuales</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka y Nunito para máxima claridad y estilo infantil -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --fuchsia-deep: #C2185B;
+            --fuchsia-vivid: #D9027D;
+            --fuchsia-bright: #FF1493;
+            --fuchsia-pastel: #FFF0F6;
+            --gold-highlight: #FACC15;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--fuchsia-pastel);
+            background-image: 
+                radial-gradient(#f9a8d4 2px, transparent 2px),
+                radial-gradient(#fbcfe8 2px, #FFF0F6 2px);
+            background-size: 42px 42px;
+            background-position: 0 0, 21px 21px;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .font-title {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Estilo de Idea Central Resaltada (Fucsia Intenso + Borde Brillante Dorado) */
+        .nodo-idea-central {
+            background: linear-gradient(135deg, #D9027D 0%, #FF1493 60%, #C2185B 100%);
+            border: 4px solid #FACC15;
+            color: #FFFFFF;
+            box-shadow: 0 8px 22px rgba(217, 2, 125, 0.38), 0 0 0 4px rgba(250, 204, 21, 0.35);
+        }
+
+        .nodo-idea-central-vacio {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            border: 4px dashed #D9027D;
+            box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.45);
+        }
+
+        /* Resaltado de palabras clave dentro de los Textos Guía */
+        .clave-central {
+            background-color: #D9027D;
+            color: #ffffff;
+            padding: 1px 8px;
+            border-radius: 8px;
+            font-weight: 900;
+            display: inline-block;
+        }
+
+        .clave-secundaria {
+            background-color: #fef08a;
+            color: #831843;
+            border-bottom: 2px solid #D9027D;
+            padding: 0 6px;
+            border-radius: 6px;
+            font-weight: 800;
+        }
+
+        /* Animaciones del Pequeño Estudiante Guía */
+        @keyframes studentFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .student-idle {
+            animation: studentFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes mouthTalk {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1.2); }
+        }
+        .talking-mouth {
+            transform-origin: center;
+            animation: mouthTalk 0.25s infinite;
+        }
+
+        @keyframes waveSound {
+            0%, 100% { transform: scaleY(0.4); }
+            50% { transform: scaleY(1); }
+        }
+        .sound-bar {
+            animation: waveSound 0.5s ease-in-out infinite;
+        }
+
+        /* Animaciones de tarjetas y casillas */
+        .btn-pop {
+            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+        }
+        .btn-pop:active {
+            transform: scale(0.95);
+        }
+
+        .chip-selected {
+            transform: scale(1.06) translateY(-3px);
+            border-color: #FACC15 !important;
+            box-shadow: 0 0 0 4px #D9027D, 0 10px 20px rgba(217, 2, 125, 0.35) !important;
+        }
+
+        .dropzone-active {
+            background-color: #fef9c3 !important;
+            border-color: #D9027D !important;
+            transform: scale(1.03);
+        }
+
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-7px); }
+            50% { transform: translateX(7px); }
+            75% { transform: translateX(-5px); }
+        }
+        .animate-shake {
+            animation: shakeError 0.35s ease-in-out;
+        }
+
+        @keyframes popReveal {
+            0% { opacity: 0; transform: scale(0.88); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .animate-reveal {
+            animation: popReveal 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-900">
+
+    <!-- ============================================================
+         CABECERA SUPERIOR
+         ============================================================ -->
+    <header class="w-full max-w-6xl mx-auto px-4 py-3 flex items-center justify-between z-20">
+        <div onclick="goToIntroOrMenu()" class="flex items-center gap-3 cursor-pointer group">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#D9027D] to-[#FF1493] border-2 border-yellow-300 flex items-center justify-center text-2xl shadow-md group-hover:scale-105 transition">
+                🗺️
+            </div>
+            <div>
+                <h1 class="text-lg sm:text-2xl font-bold text-[#C2185B] leading-tight">
+                    Exploradores de <span class="text-[#FF1493] underline decoration-yellow-400 decoration-4">Mapas Conceptuales</span>
+                </h1>
+                <p class="text-xs font-extrabold text-pink-700 hidden sm:block">Organiza tus ideas con colores y claridad</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+            <!-- Botón Repetir Voz -->
+            <button onclick="repeatLastSpeech()" title="Volver a escuchar al guía"
+                class="btn-pop bg-white hover:bg-pink-50 text-[#D9027D] border-2 border-pink-300 px-3 py-2 rounded-2xl font-extrabold text-xs sm:text-sm shadow-sm flex items-center gap-1.5">
+                <span>🗣️</span>
+                <span class="hidden sm:inline">Repetir Voz</span>
+            </button>
+
+            <!-- Botón Activar / Silenciar Voz -->
+            <button id="btn-voice-toggle" onclick="toggleVoice()" title="Activar o silenciar voz"
+                class="btn-pop bg-gradient-to-r from-[#D9027D] to-[#FF1493] text-white border-2 border-yellow-300 px-3 py-2 rounded-2xl font-extrabold text-xs sm:text-sm shadow-sm flex items-center gap-1.5">
+                <span id="voice-icon">🔊</span>
+                <span id="voice-label" class="hidden sm:inline">Voz Activa</span>
+            </button>
+
+            <!-- Botón Menú 10 Temas -->
+            <button onclick="showView('view-menu')"
+                class="btn-pop bg-white hover:bg-pink-50 text-pink-900 border-2 border-pink-300 px-3 py-2 rounded-2xl font-extrabold text-xs sm:text-sm shadow-sm">
+                📚 10 Temas
+            </button>
+        </div>
+    </header>
+
+    <!-- ============================================================
+         CONTENEDOR PRINCIPAL
+         ============================================================ -->
+    <main class="flex-grow flex flex-col items-center justify-start w-full max-w-5xl mx-auto px-4 py-2">
+
+        <!-- ========================================================
+             PEQUEÑO ESTUDIANTE GUÍA (AVATAR SVG + GLOBO CON VOZ)
+             ======================================================== -->
+        <section class="w-full max-w-4xl mb-5 bg-white/95 backdrop-blur border-4 border-[#FF1493] rounded-3xl p-3 sm:p-4 shadow-xl flex items-center gap-3 sm:gap-5 animate-reveal">
+            <!-- Avatar SVG del Pequeño Estudiante -->
+            <div class="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 student-idle relative">
+                <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-md">
+                    <!-- Mochila escolar fucsia detrás -->
+                    <rect x="42" y="108" width="116" height="65" rx="22" fill="#C2185B" stroke="#831843" stroke-width="4"/>
+                    <!-- Correas de la mochila -->
+                    <path d="M68 118 L64 165" stroke="#FACC15" stroke-width="7" stroke-linecap="round"/>
+                    <path d="M132 118 L136 165" stroke="#FACC15" stroke-width="7" stroke-linecap="round"/>
+                    <!-- Camiseta amarilla alegre -->
+                    <path d="M56 175 C56 132 144 132 144 175 Z" fill="#FACC15" stroke="#CA8A04" stroke-width="4"/>
+                    <!-- Cuello -->
+                    <rect x="90" y="118" width="20" height="20" rx="8" fill="#FDBA74"/>
+                    <!-- Orejas -->
+                    <circle cx="52" cy="82" r="12" fill="#FDBA74" stroke="#EA580C" stroke-width="3"/>
+                    <circle cx="148" cy="82" r="12" fill="#FDBA74" stroke="#EA580C" stroke-width="3"/>
+                    <!-- Cabeza -->
+                    <circle cx="100" cy="78" r="46" fill="#FED7AA" stroke="#EA580C" stroke-width="4"/>
+                    <!-- Cabello castaño estilizado con mechón -->
+                    <path d="M54 74 C52 30 148 30 146 74 C140 50 118 46 100 52 C82 46 60 50 54 74 Z" fill="#451A03"/>
+                    <path d="M95 34 Q108 16 122 34" fill="#451A03"/>
+                    <!-- Gafas modernas fucsia intenso -->
+                    <rect x="66" y="64" width="28" height="22" rx="7" fill="#FFFFFF" stroke="#D9027D" stroke-width="4"/>
+                    <rect x="106" y="64" width="28" height="22" rx="7" fill="#FFFFFF" stroke="#D9027D" stroke-width="4"/>
+                    <line x1="94" y1="74" x2="106" y2="74" stroke="#D9027D" stroke-width="4"/>
+                    <!-- Ojos brillantes -->
+                    <circle cx="80" cy="75" r="5" fill="#1E293B"/>
+                    <circle cx="82" cy="73" r="2" fill="#FFFFFF"/>
+                    <circle cx="120" cy="75" r="5" fill="#1E293B"/>
+                    <circle cx="122" cy="73" r="2" fill="#FFFFFF"/>
+                    <!-- Mejillas rosadas -->
+                    <ellipse cx="68" cy="92" rx="7" ry="4" fill="#F472B6" opacity="0.7"/>
+                    <ellipse cx="132" cy="92" rx="7" ry="4" fill="#F472B6" opacity="0.7"/>
+                    <!-- Boca (se anima cuando habla) -->
+                    <g id="student-mouth-group">
+                        <path id="student-smile" d="M86 98 Q100 112 114 98" fill="none" stroke="#9A3412" stroke-width="4" stroke-linecap="round"/>
+                        <ellipse id="student-talking-oval" cx="100" cy="102" rx="9" ry="7" fill="#E11D48" class="hidden talking-mouth"/>
+                    </g>
+                    <!-- Mano saludando -->
+                    <circle cx="158" cy="138" r="13" fill="#FED7AA" stroke="#EA580C" stroke-width="3"/>
+                </svg>
+            </div>
+
+            <!-- Globo de Texto y Control de Lectura -->
+            <div class="flex-grow bg-[#FFF0F6] border-2 border-pink-300 rounded-2xl p-3 sm:p-4 relative">
+                <div class="flex items-center justify-between gap-2 mb-1">
+                    <div class="flex items-center gap-2">
+                        <span class="bg-[#D9027D] text-white text-xs font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                            🎒 Leo, tu Guía
+                        </span>
+                        <!-- Indicador animado de onda de voz -->
+                        <div id="voice-wave-indicator" class="hidden items-end gap-0.5 h-3.5">
+                            <span class="w-1 h-3 bg-[#FF1493] rounded-full sound-bar"></span>
+                            <span class="w-1 h-3.5 bg-[#D9027D] rounded-full sound-bar" style="animation-delay: 0.15s"></span>
+                            <span class="w-1 h-2.5 bg-[#FF1493] rounded-full sound-bar" style="animation-delay: 0.3s"></span>
+                        </div>
+                    </div>
+                    <button onclick="repeatLastSpeech()" class="text-xs font-extrabold text-[#D9027D] hover:underline flex items-center gap-1">
+                        <span>🔊 Escuchar</span>
+                    </button>
+                </div>
+                <p id="guide-dialogue" class="text-sm sm:text-base font-extrabold text-slate-800 leading-snug">
+                    ¡Hola! Soy Leo. Hoy aprenderemos qué es un mapa conceptual y construiremos 10 mapas súper divertidos. ¡Toca cada parte abajo para descubrirla!
+                </p>
+            </div>
+        </section>
+
+        <!-- ========================================================
+             ETAPA 1: INTRODUCCIÓN TEÓRICA INTERACTIVA
+             ======================================================== -->
+        <section id="view-intro" class="w-full max-w-4xl bg-white rounded-3xl shadow-2xl border-4 border-pink-300 p-5 sm:p-8 animate-reveal">
+            <div class="text-center mb-5">
+                <span class="inline-block bg-pink-100 text-[#C2185B] text-xs font-black px-4 py-1 rounded-full uppercase tracking-wider mb-2">
+                    Paso 1 • Antes de Jugar
+                </span>
+                <h2 class="text-2xl sm:text-4xl font-bold text-[#C2185B]">¿Qué es un Mapa Conceptual?</h2>
+                <p class="text-slate-700 font-bold text-base sm:text-lg mt-2 max-w-2xl mx-auto leading-relaxed">
+                    Es un <span class="clave-central">dibujo organizado de ideas</span> que nos ayuda a entender y recordar un tema fácilmente, ordenando la información desde lo más importante hacia los detalles.
+                </p>
+            </div>
+
+            <!-- Diagrama Interactivo de las 4 Partes Esenciales -->
+            <div class="bg-[#FFF0F6] border-2 border-pink-300 rounded-3xl p-4 sm:p-6 mb-6">
+                <p class="text-center text-xs sm:text-sm font-black uppercase text-[#D9027D] mb-4">
+                    👆 Toca cada parte del mapa de ejemplo para que Leo te la explique en voz alta:
+                </p>
+
+                <div class="flex flex-col items-center">
+                    <!-- 1. CONCEPTO PRINCIPAL / IDEA CENTRAL -->
+                    <button onclick="explainMapPart('central')" class="btn-pop nodo-idea-central px-6 py-3.5 rounded-2xl text-center max-w-xs w-full cursor-pointer">
+                        <span class="block text-[11px] uppercase tracking-widest text-yellow-200 font-black">1. Idea Central</span>
+                        <span class="text-xl sm:text-2xl font-title font-bold">LOS ANIMALES</span>
+                    </button>
+
+                    <!-- 2. LÍNEAS CONECTORAS VERTICALES -->
+                    <div onclick="explainMapPart('lineas')" title="Toca las líneas conectoras" class="cursor-pointer py-1 flex flex-col items-center group">
+                        <div class="w-1.5 h-6 bg-[#D9027D] group-hover:scale-x-150 transition"></div>
+                        <span class="text-[11px] font-black text-[#C2185B] bg-white px-2 py-0.5 rounded-full border border-pink-300">2. Líneas Conectoras</span>
+                        <div class="w-1.5 h-5 bg-[#D9027D] group-hover:scale-x-150 transition"></div>
+                    </div>
+
+                    <!-- 3. PALABRAS DE ENLACE -->
+                    <button onclick="explainMapPart('enlace')" class="btn-pop bg-yellow-300 hover:bg-yellow-400 border-2 border-[#D9027D] text-[#831843] px-5 py-1.5 rounded-full font-black text-sm sm:text-base shadow-sm cursor-pointer">
+                        3. Palabra de Enlace: "se clasifican en"
+                    </button>
+
+                    <!-- Ramificación -->
+                    <div class="w-48 sm:w-72 h-6 border-t-4 border-l-4 border-r-4 border-[#D9027D] rounded-t-xl mt-2"></div>
+
+                    <!-- 4. CONCEPTOS SECUNDARIOS -->
+                    <div class="grid grid-cols-2 gap-4 sm:gap-8 w-full max-w-lg">
+                        <button onclick="explainMapPart('secundario')" class="btn-pop bg-white hover:bg-pink-50 border-4 border-[#FF1493] rounded-2xl p-3 text-center shadow-md cursor-pointer">
+                            <span class="block text-[10px] font-black uppercase text-[#D9027D]">4. Concepto Secundario</span>
+                            <span class="text-base sm:text-lg font-extrabold text-slate-900">Vertebrados</span>
+                        </button>
+                        <button onclick="explainMapPart('secundario')" class="btn-pop bg-white hover:bg-pink-50 border-4 border-[#FF1493] rounded-2xl p-3 text-center shadow-md cursor-pointer">
+                            <span class="block text-[10px] font-black uppercase text-[#D9027D]">4. Concepto Secundario</span>
+                            <span class="text-base sm:text-lg font-extrabold text-slate-900">Invertebrados</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Caja explicativa de la parte seleccionada -->
+                <div id="part-explanation-box" class="mt-5 bg-white border-2 border-pink-300 rounded-2xl p-3.5 text-center text-sm sm:text-base font-bold text-slate-800">
+                    💡 Toca cualquiera de las 4 partes de arriba para ver y escuchar su función.
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button onclick="playFullIntroVoice()" class="btn-pop bg-pink-100 hover:bg-pink-200 text-[#C2185B] border-2 border-[#D9027D] font-title text-lg font-bold py-3.5 px-6 rounded-2xl">
+                    🔊 Escuchar Toda la Explicación
+                </button>
+                <button onclick="startExercisesFromIntro()" class="btn-pop bg-gradient-to-r from-[#D9027D] to-[#FF1493] hover:from-[#C2185B] hover:to-[#D9027D] text-white border-2 border-yellow-300 font-title text-xl font-bold py-3.5 px-8 rounded-2xl shadow-lg">
+                    ¡Ir a los 10 Ejercicios! 🚀
+                </button>
+            </div>
+        </section>
+
+        <!-- ========================================================
+             ETAPA 2A: MENÚ DE LOS 10 TEMAS DE MAPAS CONCEPTUALES
+             ======================================================== -->
+        <section id="view-menu" class="hidden w-full max-w-5xl animate-reveal">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-[#C2185B]">Elige un Tema para Crear tu Mapa</h2>
+                    <p class="text-sm sm:text-base font-bold text-slate-700">
+                        Completados: <span id="completed-counter" class="text-[#D9027D] font-black">0</span> de 10 mapas conceptuales ⭐
+                    </p>
+                </div>
+                <button onclick="showView('view-intro')" class="btn-pop self-start bg-white border-2 border-pink-300 text-[#C2185B] px-4 py-2 rounded-2xl text-xs sm:text-sm font-extrabold shadow-sm">
+                    📖 Repasar ¿Qué es un Mapa?
+                </button>
+            </div>
+
+            <div id="topics-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3.5 sm:gap-4">
+                <!-- Se generan dinámicamente las 10 tarjetas de temas -->
+            </div>
+        </section>
+
+        <!-- ========================================================
+             ETAPA 2B: CONSTRUCCIÓN INTERACTIVA DEL MAPA CONCEPTUAL
+             ======================================================== -->
+        <section id="view-builder" class="hidden w-full max-w-5xl animate-reveal">
+            <!-- Barra superior del ejercicio -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4 bg-white px-4 py-3 rounded-2xl border-2 border-pink-300 shadow-sm">
+                <button onclick="showView('view-menu')" class="btn-pop bg-pink-100 hover:bg-pink-200 text-[#C2185B] px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold">
+                    ← Todos los Temas
+                </button>
+                <span id="builder-topic-badge" class="bg-gradient-to-r from-[#D9027D] to-[#FF1493] text-white px-4 py-1 rounded-full text-xs sm:text-sm font-black uppercase tracking-wide">
+                    Tema 1 de 10
+                </span>
+                <div class="text-xs sm:text-sm font-extrabold text-pink-900">
+                    Casillas listas: <span id="slots-progress" class="text-[#D9027D] font-black">0/5</span>
+                </div>
+            </div>
+
+            <!-- 1. CUADRO DE LECTURA: TEXTO GUÍA DEL TEMA -->
+            <div class="bg-white rounded-3xl border-4 border-[#D9027D] p-4 sm:p-6 shadow-lg mb-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5 border-b-2 border-pink-100 pb-2">
+                    <h3 class="text-base sm:text-lg font-title font-bold text-[#C2185B] flex items-center gap-2">
+                        <span>📖</span> Texto Guía de Lectura: <span id="guide-title" class="text-[#FF1493]">El Artículo</span>
+                    </h3>
+                    <button onclick="readCurrentGuideText()" class="btn-pop self-start bg-[#FFF0F6] hover:bg-pink-100 text-[#D9027D] border-2 border-[#D9027D] px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-black flex items-center gap-1.5">
+                        <span>🔊</span> Leer Texto en Voz Alta
+                    </button>
+                </div>
+                <p id="guide-reading-text" class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed">
+                    <!-- Texto guía con palabras resaltadas dinámicamente -->
+                </p>
+            </div>
+
+            <!-- 2. LIENZO DEL MAPA CONCEPTUAL INTERACTIVO -->
+            <div class="bg-white/95 rounded-3xl border-4 border-pink-300 p-4 sm:p-7 shadow-xl mb-5">
+                <div class="text-center mb-4">
+                    <span class="text-xs font-black uppercase tracking-wider text-[#C2185B] bg-pink-100 px-3 py-1 rounded-full">
+                        🧩 Completa el Mapa Conceptual (Arrastra o toca una ficha y luego toca su casilla)
+                    </span>
+                </div>
+
+                <!-- ESTRUCTURA VISUAL JERÁRQUICA DEL MAPA -->
+                <div class="flex flex-col items-center">
+                    
+                    <!-- NIVEL 1: IDEA CENTRAL (Slot 0 - Resaltado en Fucsia Intenso y Dorado) -->
+                    <div class="w-full max-w-md flex flex-col items-center">
+                        <span class="text-[11px] font-black uppercase tracking-widest text-[#C2185B] mb-1">
+                            ⭐ Idea Central del Mapa
+                        </span>
+                        <div id="slot-0" data-slot="0" onclick="handleSlotClick(0)" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0)"
+                            class="drop-slot nodo-idea-central-vacio w-full min-h-[64px] rounded-2xl px-4 py-3 flex items-center justify-center text-center cursor-pointer transition">
+                            <span class="text-sm sm:text-base font-extrabold text-[#D9027D]">+ Coloca aquí la Idea Central</span>
+                        </div>
+                    </div>
+
+                    <!-- Línea Conectora Principal -->
+                    <div class="w-1.5 h-6 bg-[#D9027D]"></div>
+
+                    <!-- Palabra de Enlace Principal -->
+                    <div id="link-main" class="bg-yellow-300 border-2 border-[#D9027D] text-[#831843] px-5 py-1.5 rounded-full font-black text-sm sm:text-base shadow-sm">
+                        se divide en
+                    </div>
+
+                    <!-- Conector Ramificado Horizontal -->
+                    <div class="w-3/5 sm:w-2/3 h-6 border-t-4 border-l-4 border-r-4 border-[#D9027D] rounded-t-2xl mt-1"></div>
+
+                    <!-- NIVEL 2 Y 3: DOS RAMAS DE CONCEPTOS SECUNDARIOS Y EJEMPLOS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+                        
+                        <!-- RAMA IZQUIERDA -->
+                        <div class="flex flex-col items-center bg-[#FFF0F6]/80 p-4 rounded-3xl border-2 border-pink-200">
+                            <span class="text-[11px] font-black uppercase text-[#D9027D] mb-1">Concepto Secundario 1</span>
+                            <div id="slot-1" data-slot="1" onclick="handleSlotClick(1)" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1)"
+                                class="drop-slot w-full min-h-[56px] bg-white border-3 border-dashed border-[#FF1493] rounded-2xl px-3 py-2.5 flex items-center justify-center text-center cursor-pointer transition">
+                                <span class="text-xs sm:text-sm font-extrabold text-pink-600">+ Concepto 1</span>
+                            </div>
+
+                            <div class="w-1.5 h-5 bg-[#FF1493]"></div>
+                            <div id="link-left" class="bg-pink-100 border border-[#D9027D] text-[#831843] px-4 py-1 rounded-full font-extrabold text-xs sm:text-sm">
+                                ejemplos
+                            </div>
+                            <div class="w-1.5 h-5 bg-[#FF1493]"></div>
+
+                            <span class="text-[11px] font-black uppercase text-slate-600 mb-1">Detalle / Ejemplo 1</span>
+                            <div id="slot-3" data-slot="3" onclick="handleSlotClick(3)" ondragover="allowDrop(event)" ondrop="handleDrop(event, 3)"
+                                class="drop-slot w-full min-h-[56px] bg-white border-3 border-dashed border-pink-400 rounded-2xl px-3 py-2.5 flex items-center justify-center text-center cursor-pointer transition">
+                                <span class="text-xs sm:text-sm font-bold text-slate-500">+ Detalle / Ejemplo</span>
+                            </div>
+                        </div>
+
+                        <!-- RAMA DERECHA -->
+                        <div class="flex flex-col items-center bg-[#FFF0F6]/80 p-4 rounded-3xl border-2 border-pink-200">
+                            <span class="text-[11px] font-black uppercase text-[#D9027D] mb-1">Concepto Secundario 2</span>
+                            <div id="slot-2" data-slot="2" onclick="handleSlotClick(2)" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2)"
+                                class="drop-slot w-full min-h-[56px] bg-white border-3 border-dashed border-[#FF1493] rounded-2xl px-3 py-2.5 flex items-center justify-center text-center cursor-pointer transition">
+                                <span class="text-xs sm:text-sm font-extrabold text-pink-600">+ Concepto 2</span>
+                            </div>
+
+                            <div class="w-1.5 h-5 bg-[#FF1493]"></div>
+                            <div id="link-right" class="bg-pink-100 border border-[#D9027D] text-[#831843] px-4 py-1 rounded-full font-extrabold text-xs sm:text-sm">
+                                ejemplos
+                            </div>
+                            <div class="w-1.5 h-5 bg-[#FF1493]"></div>
+
+                            <span class="text-[11px] font-black uppercase text-slate-600 mb-1">Detalle / Ejemplo 2</span>
+                            <div id="slot-4" data-slot="4" onclick="handleSlotClick(4)" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4)"
+                                class="drop-slot w-full min-h-[56px] bg-white border-3 border-dashed border-pink-400 rounded-2xl px-3 py-2.5 flex items-center justify-center text-center cursor-pointer transition">
+                                <span class="text-xs sm:text-sm font-bold text-slate-500">+ Detalle / Ejemplo</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. BANCO DE FICHAS PARA ARRASTRAR O TOCAR -->
+            <div id="word-bank-container" class="bg-white rounded-3xl border-4 border-yellow-300 p-4 sm:p-5 shadow-lg">
+                <p class="text-xs sm:text-sm font-black uppercase text-[#C2185B] mb-3 text-center">
+                    🎯 Fichas Disponibles (Toca o arrastra cada ficha hasta su lugar en el mapa):
+                </p>
+                <div id="chips-pool" class="flex flex-wrap items-center justify-center gap-3">
+                    <!-- Fichas dinámicas -->
+                </div>
+            </div>
+
+            <!-- 4. BANNER DE CELEBRACIÓN AL COMPLETAR EL MAPA -->
+            <div id="map-completed-banner" class="hidden mt-5 bg-gradient-to-r from-[#D9027D] via-[#FF1493] to-[#C2185B] text-white rounded-3xl p-6 border-4 border-yellow-300 shadow-2xl text-center animate-reveal">
+                <div class="text-5xl mb-2">🏆⭐⭐⭐🏆</div>
+                <h3 class="text-2xl sm:text-3xl font-title font-bold">¡Mapa Conceptual Completado!</h3>
+                <p class="text-pink-100 font-bold text-sm sm:text-base mt-1 mb-5">
+                    Has organizado perfectamente las ideas centrales y secundarias de este tema.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="showView('view-menu')" class="btn-pop bg-white text-[#C2185B] font-title text-lg font-bold py-3 px-6 rounded-2xl shadow">
+                        📚 Ver los 10 Temas
+                    </button>
+                    <button id="btn-next-topic" onclick="goToNextTopic()" class="btn-pop bg-yellow-300 hover:bg-yellow-400 text-slate-900 font-title text-xl font-bold py-3 px-8 rounded-2xl shadow-lg">
+                        Siguiente Tema ➔
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-3 text-xs font-extrabold text-[#C2185B]/75">
+        Exploradores de Mapas Conceptuales • Educación Primaria
+    </footer>
+
+    <!-- ============================================================
+         JAVASCRIPT: 10 TEMAS + NARRACIÓN CON VOZ + INTERACCIÓN DUAL
+         ============================================================ -->
+    <script>
+        // ============================================================
+        // 1. BANCO DE LOS 10 TEMAS OBLIGATORIOS DE MAPAS CONCEPTUALES
+        //    Cada tema incluye:
+        //    - Texto guía HTML (con palabras clave resaltadas)
+        //    - Texto limpio para narración por voz
+        //    - Estructura de 5 nodos (0: Idea Central, 1-2: Secundarios, 3-4: Ejemplos/Detalles)
+        //    - Palabras de enlace fijas
+        // ============================================================
+        const CONCEPT_MAPS_TOPICS = [
+            {
+                id: 1,
+                icon: '🏷️',
+                title: 'El Artículo',
+                subtitle: 'Definidos e Indefinidos',
+                guideHtml: 'El <span class="clave-central">Artículo</span> es la palabra que va delante del sustantivo para anunciar su género y número. Se clasifica en <span class="clave-secundaria">Artículos Definidos</span> cuando conocemos al sustantivo (como <span class="clave-secundaria">el, la, los, las</span>) y en <span class="clave-secundaria">Artículos Indefinidos</span> cuando no lo conocemos con exactitud (como <span class="clave-secundaria">un, una, unos, unas</span>).',
+                guideVoice: 'El Artículo es la palabra que va delante del sustantivo para anunciar su género y número. Se clasifica en Artículos Definidos, como el, la, los, las; y en Artículos Indefinidos, como un, una, unos, unas.',
+                linkMain: 'se clasifica en',
+                linkLeft: 'ejemplos',
+                linkRight: 'ejemplos',
+                slots: [
+                    { index: 0, text: 'EL ARTÍCULO', hint: 'Es el tema principal que acompaña al sustantivo.' },
+                    { index: 1, text: 'Artículos Definidos', hint: 'Se usan cuando conocemos al sustantivo.' },
+                    { index: 2, text: 'Artículos Indefinidos', hint: 'Se usan cuando no conocemos con exactitud al sustantivo.' },
+                    { index: 3, text: 'el, la, los, las', hint: 'Son los ejemplos de artículos definidos.' },
+                    { index: 4, text: 'un, una, unos, unas', hint: 'Son los ejemplos de artículos indefinidos.' }
+                ]
+            },
+            {
+                id: 2,
+                icon: '🌍',
+                title: 'Los Sustantivos Comunes y Propios',
+                subtitle: 'Nombrando personas, lugares y cosas',
+                guideHtml: 'Los <span class="clave-central">Sustantivos</span> son palabras que nombran personas, animales, lugares o cosas. Los <span class="clave-secundaria">Sustantivos Comunes</span> nombran de forma general y se escriben con minúscula (ejemplo: <span class="clave-secundaria">niña, perro, ciudad</span>). Los <span class="clave-secundaria">Sustantivos Propios</span> nombran de forma particular y siempre llevan mayúscula inicial (ejemplo: <span class="clave-secundaria">Sofía, Toby, Bolivia</span>).',
+                guideVoice: 'Los Sustantivos nombran personas, animales, lugares o cosas. Los Sustantivos Comunes nombran de forma general, por ejemplo: niña, perro, ciudad. Los Sustantivos Propios nombran de forma particular con mayúscula inicial, por ejemplo: Sofía, Toby, Bolivia.',
+                linkMain: 'pueden ser',
+                linkLeft: 'por ejemplo',
+                linkRight: 'por ejemplo',
+                slots: [
+                    { index: 0, text: 'LOS SUSTANTIVOS', hint: 'Es la idea central que nombra todo lo que nos rodea.' },
+                    { index: 1, text: 'Sustantivos Comunes', hint: 'Nombran seres u objetos de manera general.' },
+                    { index: 2, text: 'Sustantivos Propios', hint: 'Distinguen a un ser o lugar con mayúscula inicial.' },
+                    { index: 3, text: 'niña, perro, ciudad', hint: 'Palabras escritas con minúscula de forma general.' },
+                    { index: 4, text: 'Sofía, Toby, Bolivia', hint: 'Nombres propios que inician con mayúscula.' }
+                ]
+            },
+            {
+                id: 3,
+                icon: '🔢',
+                title: 'Sustantivos por Número',
+                subtitle: 'Singular y Plural',
+                guideHtml: 'El <span class="clave-central">Número del Sustantivo</span> indica la cantidad de seres u objetos que nombramos. Está en <span class="clave-secundaria">Singular</span> cuando nombra a un solo ser u objeto (como <span class="clave-secundaria">el árbol, la flor</span>). Está en <span class="clave-secundaria">Plural</span> cuando nombra a varios seres u objetos (como <span class="clave-secundaria">los árboles, las flores</span>).',
+                guideVoice: 'El Número del Sustantivo indica la cantidad de seres u objetos. Está en Singular cuando nombra uno solo, como el árbol y la flor. Está en Plural cuando nombra varios, como los árboles y las flores.',
+                linkMain: 'se divide en',
+                linkLeft: 'un solo ser',
+                linkRight: 'varios seres',
+                slots: [
+                    { index: 0, text: 'NÚMERO DEL SUSTANTIVO', hint: 'Es el tema central sobre la cantidad en los sustantivos.' },
+                    { index: 1, text: 'Singular', hint: 'Indica que hay un solo elemento.' },
+                    { index: 2, text: 'Plural', hint: 'Indica que hay dos o más elementos.' },
+                    { index: 3, text: 'el árbol, la flor', hint: 'Ejemplo de un solo árbol y una sola flor.' },
+                    { index: 4, text: 'los árboles, las flores', hint: 'Ejemplo con varios árboles y varias flores.' }
+                ]
+            },
+            {
+                id: 4,
+                icon: '👧👦',
+                title: 'Sustantivos por Género (Sexo)',
+                subtitle: 'Masculino y Femenino',
+                guideHtml: 'El <span class="clave-central">Género del Sustantivo</span> indica si pertenece al grupo masculino o femenino. Es <span class="clave-secundaria">Masculino</span> cuando puede llevar delante "el" o "los" (como <span class="clave-secundaria">el león, el maestro</span>). Es <span class="clave-secundaria">Femenino</span> cuando puede llevar delante "la" o "las" (como <span class="clave-secundaria">la leona, la maestra</span>).',
+                guideVoice: 'El Género del Sustantivo indica si es masculino o femenino. Es Masculino cuando lleva delante el o los, como el león y el maestro. Es Femenino cuando lleva delante la o las, como la leona y la maestra.',
+                linkMain: 'se clasifica en',
+                linkLeft: 'lleva "el / los"',
+                linkRight: 'lleva "la / las"',
+                slots: [
+                    { index: 0, text: 'GÉNERO DEL SUSTANTIVO', hint: 'Es la idea central sobre masculino y femenino.' },
+                    { index: 1, text: 'Masculino', hint: 'Acepta los artículos el o los.' },
+                    { index: 2, text: 'Femenino', hint: 'Acepta los artículos la o las.' },
+                    { index: 3, text: 'el león, el maestro', hint: 'Ejemplos de sustantivos masculinos.' },
+                    { index: 4, text: 'la leona, la maestra', hint: 'Ejemplos de sustantivos femeninos.' }
+                ]
+            },
+            {
+                id: 5,
+                icon: '🔄',
+                title: 'Los Sinónimos y Antónimos',
+                subtitle: 'Significados iguales y opuestos',
+                guideHtml: 'Las <span class="clave-central">Relaciones de Significado</span> nos ayudan a enriquecer nuestro vocabulario. Los <span class="clave-secundaria">Sinónimos</span> son palabras diferentes con significado igual o parecido (ejemplo: <span class="clave-secundaria">feliz = contento</span>). Los <span class="clave-secundaria">Antónimos</span> son palabras que tienen significados contrarios u opuestos (ejemplo: <span class="clave-secundaria">día ↔ noche</span>).',
+                guideVoice: 'Las Relaciones de Significado enriquecen nuestro vocabulario. Los Sinónimos tienen significado igual o parecido, como feliz y contento. Los Antónimos tienen significado contrario u opuesto, como día y noche.',
+                linkMain: 'comprenden',
+                linkLeft: 'igual significado',
+                linkRight: 'significado opuesto',
+                slots: [
+                    { index: 0, text: 'RELACIONES DE SIGNIFICADO', hint: 'Idea central que agrupa sinónimos y antónimos.' },
+                    { index: 1, text: 'Sinónimos', hint: 'Palabras que significan lo mismo.' },
+                    { index: 2, text: 'Antónimos', hint: 'Palabras que significan lo contrario.' },
+                    { index: 3, text: 'feliz = contento', hint: 'Ejemplo de palabras con significado igual.' },
+                    { index: 4, text: 'día ↔ noche', hint: 'Ejemplo de palabras opuestas.' }
+                ]
+            },
+            {
+                id: 6,
+                icon: '✍️',
+                title: 'La Oración y sus Partes',
+                subtitle: 'Sujeto y Predicado',
+                guideHtml: 'La <span class="clave-central">Oración</span> es un conjunto ordenado de palabras con sentido completo. Tiene dos partes principales: el <span class="clave-secundaria">Sujeto</span>, que indica quién realiza la acción (ejemplo: <span class="clave-secundaria">El perro juguetón</span>), y el <span class="clave-secundaria">Predicado</span>, que dice qué hace el sujeto y contiene el verbo (ejemplo: <span class="clave-secundaria">corre en el parque</span>).',
+                guideVoice: 'La Oración es un conjunto de palabras con sentido completo. Tiene dos partes: el Sujeto, que indica quién realiza la acción, como El perro juguetón; y el Predicado, que dice qué hace, como corre en el parque.',
+                linkMain: 'tiene dos partes',
+                linkLeft: 'quién realiza la acción',
+                linkRight: 'qué hace el sujeto',
+                slots: [
+                    { index: 0, text: 'LA ORACIÓN', hint: 'Idea central: conjunto de palabras con sentido completo.' },
+                    { index: 1, text: 'Sujeto', hint: 'Persona, animal o cosa de quien se habla.' },
+                    { index: 2, text: 'Predicado', hint: 'Lo que se dice del sujeto; siempre lleva verbo.' },
+                    { index: 3, text: 'El perro juguetón', hint: 'Ejemplo de sujeto en la oración.' },
+                    { index: 4, text: 'corre en el parque', hint: 'Ejemplo de predicado con la acción.' }
+                ]
+            },
+            {
+                id: 7,
+                icon: '❗',
+                title: 'Los Signos de Puntuación',
+                subtitle: 'Punto, Coma, Interrogación y Exclamación',
+                guideHtml: 'Los <span class="clave-central">Signos de Puntuación</span> ordenan nuestras ideas al escribir y nos indican pausas y entonación. Los <span class="clave-secundaria">Signos de Pausa</span> separan ideas y enumeraciones (como <span class="clave-secundaria">el punto (.) y la coma (,)</span>). Los <span class="clave-secundaria">Signos de Entonación</span> expresan preguntas o emociones (como <span class="clave-secundaria">interrogación (¿?) y exclamación (¡!)</span>).',
+                guideVoice: 'Los Signos de Puntuación ordenan nuestras ideas al escribir. Los Signos de Pausa separan ideas, como el punto y la coma. Los Signos de Entonación expresan preguntas o emociones, como interrogación y exclamación.',
+                linkMain: 'se agrupan en',
+                linkLeft: 'son',
+                linkRight: 'son',
+                slots: [
+                    { index: 0, text: 'SIGNOS DE PUNTUACIÓN', hint: 'Idea central sobre los signos que ordenan textos.' },
+                    { index: 1, text: 'Signos de Pausa', hint: 'Indican descansos al leer o enumerar.' },
+                    { index: 2, text: 'Signos de Entonación', hint: 'Dan tono de pregunta o sorpresa.' },
+                    { index: 3, text: 'Punto (.) y Coma (,)', hint: 'Signos que marcan pausas.' },
+                    { index: 4, text: 'Interrogación (¿?) y Exclamación (¡!)', hint: 'Signos que abren y cierran preguntas o emociones.' }
+                ]
+            },
+            {
+                id: 8,
+                icon: '📔',
+                title: 'La Autobiografía',
+                subtitle: 'La historia de mi propia vida',
+                guideHtml: 'La <span class="clave-central">Autobiografía</span> es el relato de la vida de una persona escrita por ella misma en primera persona ("yo"). En su estructura presenta un <span class="clave-secundaria">Inicio o Nacimiento</span> con datos personales (como <span class="clave-secundaria">nombre, fecha y lugar donde nací</span>) y un <span class="clave-secundaria">Desarrollo y Metas</span> con vivencias importantes (como <span class="clave-secundaria">mi familia, escuela y sueños</span>).',
+                guideVoice: 'La Autobiografía es el relato de la vida de una persona escrita por ella misma. Tiene un Inicio o Nacimiento, con nombre, fecha y lugar donde nací; y un Desarrollo y Metas, con mi familia, escuela y sueños.',
+                linkMain: 'se organiza en',
+                linkLeft: 'incluye',
+                linkRight: 'cuenta',
+                slots: [
+                    { index: 0, text: 'LA AUTOBIOGRAFÍA', hint: 'Idea central: relato de nuestra propia vida.' },
+                    { index: 1, text: 'Inicio o Nacimiento', hint: 'Primera parte con los datos de origen.' },
+                    { index: 2, text: 'Desarrollo y Metas', hint: 'Experiencias vividas y deseos futuros.' },
+                    { index: 3, text: 'nombre, fecha y lugar donde nací', hint: 'Datos iniciales de toda autobiografía.' },
+                    { index: 4, text: 'mi familia, escuela y sueños', hint: 'Recuerdos y metas personales.' }
+                ]
+            },
+            {
+                id: 9,
+                icon: '🎶',
+                title: 'El Poema y sus Partes',
+                subtitle: 'Verso, Estrofa y Rima',
+                guideHtml: 'El <span class="clave-central">Poema</span> es un texto literario escrito para expresar sentimientos, emociones y belleza con musicalidad. Está formado por <span class="clave-secundaria">Verso y Estrofa</span>, donde cada línea es un verso y su unión forma estrofas (ejemplo: <span class="clave-secundaria">renglones cortos agrupados</span>), y por la <span class="clave-secundaria">Rima</span>, que da ritmo al final (ejemplo: <span class="clave-secundaria">sonidos finales iguales: luna - cuna</span>).',
+                guideVoice: 'El Poema expresa sentimientos y belleza con musicalidad. Está formado por Verso y Estrofa, que son renglones cortos agrupados; y por la Rima, que son sonidos finales iguales como luna y cuna.',
+                linkMain: 'se compone de',
+                linkLeft: 'son',
+                linkRight: 'produce',
+                slots: [
+                    { index: 0, text: 'EL POEMA', hint: 'Idea central: texto literario que expresa sentimientos.' },
+                    { index: 1, text: 'Verso y Estrofa', hint: 'Cada línea del poema y el grupo de líneas.' },
+                    { index: 2, text: 'La Rima', hint: 'Musicalidad al final de los versos.' },
+                    { index: 3, text: 'renglones cortos agrupados', hint: 'Así se ven los versos formando estrofas.' },
+                    { index: 4, text: 'sonidos finales iguales: luna - cuna', hint: 'Ejemplo claro de palabras que riman.' }
+                ]
+            },
+            {
+                id: 10,
+                icon: '🏰',
+                title: 'El Cuento y sus Partes',
+                subtitle: 'Inicio, Nudo y Desenlace',
+                guideHtml: 'El <span class="clave-central">Cuento</span> es una narración breve de hechos imaginarios protagonizada por pocos personajes. Su estructura tiene un <span class="clave-secundaria">Inicio</span> donde se presenta la historia (ejemplo: <span class="clave-secundaria">personajes y lugar: Había una vez...</span>) y un <span class="clave-secundaria">Nudo y Desenlace</span> donde ocurre y se resuelve el problema (ejemplo: <span class="clave-secundaria">aventura principal y final feliz</span>).',
+                guideVoice: 'El Cuento es una narración breve de hechos imaginarios. Tiene un Inicio donde se presentan personajes y lugar con Había una vez; y un Nudo y Desenlace con la aventura principal y el final feliz.',
+                linkMain: 'se estructura en',
+                linkLeft: 'presenta',
+                linkRight: 'narra',
+                slots: [
+                    { index: 0, text: 'EL CUENTO', hint: 'Idea central: narración breve imaginaria.' },
+                    { index: 1, text: 'Inicio', hint: 'Comienzo del cuento donde conocemos a los personajes.' },
+                    { index: 2, text: 'Nudo y Desenlace', hint: 'Problema o aventura y solución final.' },
+                    { index: 3, text: 'personajes y lugar: Había una vez...', hint: 'Elementos que aparecen al iniciar un cuento.' },
+                    { index: 4, text: 'aventura principal y final feliz', hint: 'Lo que pasa en el conflicto y cómo termina.' }
+                ]
+            }
+        ];
+
+        // ============================================================
+        // 2. ESTADO DE LA APLICACIÓN
+        // ============================================================
+        let currentTopicIndex = 0;
+        let completedTopicsSet = new Set(JSON.parse(localStorage.getItem('mapas_completados_v1') || '[]'));
+        let placedValues = [null, null, null, null, null];
+        let selectedChipText = null;
+        let voiceEnabled = true;
+        let lastSpokenText = '';
+
+        // ============================================================
+        // 3. MOTOR DE VOZ EN ESPAÑOL (Web Speech API - speechSynthesis)
+        // ============================================================
+        function speakText(text) {
+            lastSpokenText = text;
+            document.getElementById('guide-dialogue').textContent = text;
+
+            if (!voiceEnabled || !('speechSynthesis' in window)) return;
+
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'es-ES';
+                utterance.rate = 0.96;  // Velocidad pausada y clara para primaria
+                utterance.pitch = 1.15; // Tono amigable infantil
+
+                // Buscar una voz en español si está disponible
+                const voices = window.speechSynthesis.getVoices();
+                const spanishVoice = voices.find(v => v.lang.startsWith('es'));
+                if (spanishVoice) utterance.voice = spanishVoice;
+
+                utterance.onstart = () => setTalkingAnimation(true);
+                utterance.onend = () => setTalkingAnimation(false);
+                utterance.onerror = () => setTalkingAnimation(false);
+
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                setTalkingAnimation(false);
+            }
+        }
+
+        function setTalkingAnimation(isTalking) {
+            const smile = document.getElementById('student-smile');
+            const oval = document.getElementById('student-talking-oval');
+            const wave = document.getElementById('voice-wave-indicator');
+
+            if (isTalking) {
+                smile.classList.add('hidden');
+                oval.classList.remove('hidden');
+                wave.classList.remove('hidden');
+                wave.classList.add('flex');
+            } else {
+                oval.classList.add('hidden');
+                smile.classList.remove('hidden');
+                wave.classList.add('hidden');
+                wave.classList.remove('flex');
+            }
+        }
+
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            const icon = document.getElementById('voice-icon');
+            const label = document.getElementById('voice-label');
+            if (voiceEnabled) {
+                icon.textContent = '🔊';
+                label.textContent = 'Voz Activa';
+                repeatLastSpeech();
+            } else {
+                window.speechSynthesis.cancel();
+                setTalkingAnimation(false);
+                icon.textContent = '🔇';
+                label.textContent = 'Voz Silenciada';
+            }
+        }
+
+        function repeatLastSpeech() {
+            if (lastSpokenText) speakText(lastSpokenText);
+        }
+
+        // Cargar voces en navegadores que las cargan asíncronamente
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        }
+
+        // ============================================================
+        // 4. NAVEGACIÓN Y ETAPA 1 (INTRODUCCIÓN TEÓRICA)
+        // ============================================================
+        function showView(viewId) {
+            ['view-intro', 'view-menu', 'view-builder'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+
+            if (viewId === 'view-menu') {
+                renderTopicsMenu();
+                speakText('Elige cualquiera de los 10 temas para leer su texto guía y armar su mapa conceptual.');
+            }
+        }
+
+        function goToIntroOrMenu() {
+            showView('view-intro');
+        }
+
+        function explainMapPart(part) {
+            const box = document.getElementById('part-explanation-box');
+            let msg = '';
+            if (part === 'central') {
+                msg = '⭐ 1. Idea Central: Es el tema más importante del mapa. Siempre va arriba o en el centro, con letras grandes y color llamativo.';
+            } else if (part === 'lineas') {
+                msg = '📏 2. Líneas Conectoras: Son las rayas o flechas que unen una idea con otra para mostrar el orden.';
+            } else if (part === 'enlace') {
+                msg = '🔗 3. Palabras de Enlace: Son palabras cortas como "se clasifica en", "son" o "tiene" que unen dos conceptos.';
+            } else if (part === 'secundario') {
+                msg = '🌿 4. Conceptos Secundarios: Son los subtemas o ejemplos que explican la idea central.';
+            }
+            box.textContent = msg;
+            speakText(msg.replace(/^[^\w¿¡]+/, ''));
+        }
+
+        function playFullIntroVoice() {
+            const fullText = 'Un mapa conceptual es un dibujo organizado de ideas que nos ayuda a entender un tema. Tiene cuatro partes: primero, la Idea Central, que es el tema principal; segundo, las Líneas Conectoras; tercero, las Palabras de Enlace; y cuarto, los Conceptos Secundarios con sus ejemplos.';
+            speakText(fullText);
+        }
+
+        function startExercisesFromIntro() {
+            showView('view-menu');
+        }
+
+        // ============================================================
+        // 5. MENÚ DE LOS 10 TEMAS
+        // ============================================================
+        function renderTopicsMenu() {
+            document.getElementById('completed-counter').textContent = completedTopicsSet.size;
+            const grid = document.getElementById('topics-grid');
+            grid.innerHTML = '';
+
+            CONCEPT_MAPS_TOPICS.forEach((topic, idx) => {
+                const isDone = completedTopicsSet.has(topic.id);
+                const card = document.createElement('div');
+                card.onclick = () => loadTopicBuilder(idx);
+                card.className = `btn-pop cursor-pointer rounded-3xl p-4 sm:p-5 border-4 shadow-md transition flex items-center justify-between gap-3 ${
+                    isDone 
+                        ? 'bg-gradient-to-r from-pink-50 to-yellow-50 border-yellow-400' 
+                        : 'bg-white hover:bg-pink-50 border-pink-300'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D9027D] to-[#FF1493] text-white flex items-center justify-center text-2xl sm:text-3xl shadow flex-shrink-0">
+                            ${topic.icon}
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-black uppercase tracking-wider text-[#D9027D]">
+                                Ejercicio ${topic.id} de 10
+                            </span>
+                            <h3 class="text-lg sm:text-xl font-title font-bold text-slate-900 leading-tight">
+                                ${topic.title}
+                            </h3>
+                            <p class="text-xs sm:text-sm font-bold text-slate-600">${topic.subtitle}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                        <span class="text-xl">${isDone ? '⭐' : '➡️'}</span>
+                        <span class="text-[11px] font-black px-2.5 py-0.5 rounded-full ${isDone ? 'bg-yellow-300 text-slate-900' : 'bg-pink-100 text-[#C2185B]'}">
+                            ${isDone ? 'Completado' : 'Armar'}
+                        </span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ============================================================
+        // 6. CONSTRUCTOR DEL MAPA CONCEPTUAL (ARRASTRAR O TOCAR)
+        // ============================================================
+        function shuffle(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        function loadTopicBuilder(idx) {
+            currentTopicIndex = idx;
+            const topic = CONCEPT_MAPS_TOPICS[idx];
+            placedValues = [null, null, null, null, null];
+            selectedChipText = null;
+
+            // Actualizar cabecera y texto guía
+            document.getElementById('builder-topic-badge').textContent = `Ejercicio ${topic.id} de 10`;
+            document.getElementById('guide-title').textContent = topic.title;
+            document.getElementById('guide-reading-text').innerHTML = topic.guideHtml;
+
+            // Actualizar palabras de enlace fijas del mapa
+            document.getElementById('link-main').textContent = topic.linkMain;
+            document.getElementById('link-left').textContent = topic.linkLeft;
+            document.getElementById('link-right').textContent = topic.linkRight;
+
+            // Reiniciar visualmente las 5 casillas
+            resetSlotsVisuals();
+            updateSlotsCounter();
+
+            // Ocultar banner de completado y mostrar banco de fichas
+            document.getElementById('map-completed-banner').classList.add('hidden');
+            document.getElementById('word-bank-container').classList.remove('hidden');
+
+            // Renderizar fichas mezcladas
+            renderChipsPool(topic);
+
+            // Mostrar vista
+            ['view-intro', 'view-menu', 'view-builder'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById('view-builder').classList.remove('hidden');
+
+            // Leer automáticamente el texto guía del tema
+            speakText(`Tema ${topic.id}: ${topic.title}. ${topic.guideVoice}`);
+        }
+
+        function readCurrentGuideText() {
+            const topic = CONCEPT_MAPS_TOPICS[currentTopicIndex];
+            speakText(topic.guideVoice);
+        }
+
+        function resetSlotsVisuals() {
+            // Slot 0: Idea Central
+            const s0 = document.getElementById('slot-0');
+            s0.className = 'drop-slot nodo-idea-central-vacio w-full min-h-[64px] rounded-2xl px-4 py-3 flex items-center justify-center text-center cursor-pointer transition';
+            s0.innerHTML = '<span class="text-sm sm:text-base font-extrabold text-[#D9027D]">+ Coloca aquí la Idea Central</span>';
+
+            // Slots 1 y 2: Conceptos Secundarios
+            [1, 2].forEach(i => {
+                const el = document.getElementById(`slot-${i}`);
+                el.className = 'drop-slot w-full min-h-[56px] bg-white border-3 border-dashed border-[#FF1493] rounded-2xl px-3 py-2.5 flex items-center justify-center text-center cursor-pointer transition';
+                el.innerHTML = `<span class="text-xs sm:text-sm font-extrabold text-pink-600">+ Concepto ${i}</span>`;
+            });
+
+            // Slots 3 y 4: Ejemplos / Detalles
+            [3, 4].forEach(i => {
+                const el = document.getElementById(`slot-${i}`);
+                el.className = 'drop-slot w-full min-h-[56px] bg-white border-3 border-dashed border-pink-400 rounded-2xl px-3 py-2.5 flex items-center justify-center text-center cursor-pointer transition';
+                el.innerHTML = '<span class="text-xs sm:text-sm font-bold text-slate-500">+ Detalle / Ejemplo</span>';
+            });
+        }
+
+        function renderChipsPool(topic) {
+            const pool = document.getElementById('chips-pool');
+            pool.innerHTML = '';
+
+            const shuffledSlots = shuffle(topic.slots);
+            shuffledSlots.forEach(item => {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.draggable = true;
+                chip.dataset.text = item.text;
+                chip.className = 'word-chip btn-pop bg-gradient-to-r from-[#D9027D] to-[#FF1493] hover:from-[#C2185B] hover:to-[#D9027D] text-white border-2 border-yellow-300 px-4 py-3 rounded-2xl font-extrabold text-sm sm:text-base shadow-md cursor-grab active:cursor-grabbing';
+                chip.textContent = item.text;
+
+                // Soporte táctil y clic simple
+                chip.onclick = () => selectChip(item.text, chip);
+
+                // Soporte Drag & Drop de escritorio
+                chip.ondragstart = (e) => {
+                    selectChip(item.text, chip);
+                    e.dataTransfer.setData('text/plain', item.text);
+                };
+
+                pool.appendChild(chip);
+            });
+        }
+
+        function selectChip(text, chipElement) {
+            // Alternar selección si toca la misma ficha
+            if (selectedChipText === text) {
+                selectedChipText = null;
+                chipElement.classList.remove('chip-selected');
+                return;
+            }
+
+            selectedChipText = text;
+            document.querySelectorAll('.word-chip').forEach(c => c.classList.remove('chip-selected'));
+            chipElement.classList.add('chip-selected');
+
+            // Resaltar visualmente casillas disponibles
+            document.querySelectorAll('.drop-slot').forEach((slot, idx) => {
+                if (placedValues[idx] === null) {
+                    slot.classList.add('dropzone-active');
+                }
+            });
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        function handleDrop(e, slotIndex) {
+            e.preventDefault();
+            const text = e.dataTransfer.getData('text/plain') || selectedChipText;
+            if (text) {
+                attemptPlaceChipInSlot(text, slotIndex);
+            }
+        }
+
+        function handleSlotClick(slotIndex) {
+            if (placedValues[slotIndex] !== null) return;
+            if (!selectedChipText) {
+                const topic = CONCEPT_MAPS_TOPICS[currentTopicIndex];
+                speakText(`Primero toca una ficha fucsia de abajo y luego toca esta casilla. Pista: ${topic.slots[slotIndex].hint}`);
+                return;
+            }
+            attemptPlaceChipInSlot(selectedChipText, slotIndex);
+        }
+
+        function attemptPlaceChipInSlot(chipText, slotIndex) {
+            // Quitar resaltado activo de casillas
+            document.querySelectorAll('.drop-slot').forEach(s => s.classList.remove('dropzone-active'));
+
+            if (placedValues[slotIndex] !== null) return;
+
+            const topic = CONCEPT_MAPS_TOPICS[currentTopicIndex];
+            const expected = topic.slots[slotIndex];
+            const slotEl = document.getElementById(`slot-${slotIndex}`);
+
+            if (chipText === expected.text) {
+                // ¡ACIERTO!
+                placedValues[slotIndex] = chipText;
+                selectedChipText = null;
+
+                // Ocultar la ficha usada del banco
+                document.querySelectorAll('.word-chip').forEach(c => {
+                    c.classList.remove('chip-selected');
+                    if (c.dataset.text === chipText) {
+                        c.classList.add('hidden');
+                    }
+                });
+
+                // Estilo especial si es la Idea Central (Slot 0) o concepto/detalle
+                if (slotIndex === 0) {
+                    slotEl.className = 'drop-slot nodo-idea-central w-full min-h-[64px] rounded-2xl px-4 py-3 flex items-center justify-center text-center animate-reveal';
+                    slotEl.innerHTML = `<span class="text-lg sm:text-2xl font-title font-bold tracking-wide">⭐ ${chipText} ⭐</span>`;
+                    speakText(`¡Excelente! Has colocado la Idea Central: ${chipText}.`);
+                } else if (slotIndex === 1 || slotIndex === 2) {
+                    slotEl.className = 'drop-slot w-full min-h-[56px] bg-gradient-to-r from-pink-100 to-rose-100 border-4 border-[#D9027D] rounded-2xl px-3 py-2.5 flex items-center justify-center text-center shadow-md animate-reveal';
+                    slotEl.innerHTML = `<span class="text-sm sm:text-lg font-black text-[#831843]">✅ ${chipText}</span>`;
+                    speakText(`¡Muy bien! ${chipText} está en su lugar correcto.`);
+                } else {
+                    slotEl.className = 'drop-slot w-full min-h-[56px] bg-yellow-100 border-3 border-yellow-400 rounded-2xl px-3 py-2.5 flex items-center justify-center text-center shadow-sm animate-reveal';
+                    slotEl.innerHTML = `<span class="text-sm sm:text-base font-extrabold text-slate-900">✨ ${chipText}</span>`;
+                    speakText(`¡Genial! Ese ejemplo completa muy bien la rama.`);
+                }
+
+                updateSlotsCounter();
+                checkIfMapComplete();
+            } else {
+                // ERROR CON PISTA AMIGABLE
+                slotEl.classList.add('animate-shake');
+                setTimeout(() => slotEl.classList.remove('animate-shake'), 400);
+                speakText(`¡Casi! Esa ficha no va ahí. Pista: ${expected.hint}`);
+            }
+        }
+
+        function updateSlotsCounter() {
+            const filled = placedValues.filter(v => v !== null).length;
+            document.getElementById('slots-progress').textContent = `${filled}/5`;
+        }
+
+        function checkIfMapComplete() {
+            const allFilled = placedValues.every(v => v !== null);
+            if (!allFilled) return;
+
+            const topic = CONCEPT_MAPS_TOPICS[currentTopicIndex];
+            completedTopicsSet.add(topic.id);
+            localStorage.setItem('mapas_completados_v1', JSON.stringify(Array.from(completedTopicsSet)));
+
+            document.getElementById('word-bank-container').classList.add('hidden');
+            const banner = document.getElementById('map-completed-banner');
